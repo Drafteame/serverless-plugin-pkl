@@ -8,7 +8,7 @@ and upload it to S3 bucket explicitly or when a deployment is executed.
 To install this plugin, navigate to your Serverless project directory and run the following command:
 
 ```bash
-npm install --save-dev serverless-plugin-pkl
+npm install --save-dev serverless-plugin-pkl --legacy-peer-deps
 ```
 
 Then, add the plugin to your `serverless.yml` file:
