@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Drafteame/serverless-plugin-template.git"
+    "url": "git+https://github.com/Drafteame/serverless-plugin-pkl.git"
   },
   "keywords": [
     "serverless",
@@ -25,9 +25,9 @@
   "author": "Eduardo Aguilar <dante.aguilar41@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Drafteame/serverless-plugin-template/issues"
+    "url": "https://github.com/Drafteame/serverless-plugin-pkl/issues"
   },
-  "homepage": "https://github.com/Drafteame/serverless-plugin-template#readme",
+  "homepage": "https://github.com/Drafteame/serverless-plugin-pkl#readme",
   "devDependencies": {
     "chai": "^5.1.1",
     "chai-as-promised": "^8.0.0",
@@ -40,7 +40,6 @@
     "sinon-chai": "^3.7.0"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.596.0",
     "chalk": "^5.3.0",
     "child_process": "^1.0.2",
     "lodash": "^4.17.21",
