@@ -1,0 +1,26 @@
+service: test-project
+
+frameworkVersion: '3'
+
+configValidationMode: off
+
+custom:
+  some: '{{ pkl:some.config }}'
+  pklConfig:
+    file: config/service.pkl
+    upload:
+      format: yaml
+      bucket: '{{ pkl:UPLOAD_BUCKET }}-${self:provider.stage}'
+
+provider:
+  name: aws
+  stage: ${opt:stage, "dev"}
+  architecture: '{{ pkl:ARCH }}'
+  runtime: python3.9
+
+functions:
+  hello:
+    handler: handler.hello
+
+plugins:
+  - serverless-plugin-pkl
