@@ -17,7 +17,10 @@
   "keywords": [
     "serverless",
     "plugin",
-    "template"
+    "pkl",
+    "configuration",
+    "aws",
+    "s3"
   ],
   "author": "Eduardo Aguilar <dante.aguilar41@gmail.com>",
   "license": "MIT",
