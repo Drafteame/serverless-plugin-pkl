@@ -114,4 +114,24 @@ describe('SlsPlugin', function () {
       expect(slsPlugin.uploadConfig()).to.eventually.be.fulfilled;
     });
   });
+
+  describe('remove file configuration', function () {
+    it('throws an error when the bucket does not exist', async function () {
+      awsRequest.withArgs('S3', 'listBuckets').resolves({ Buckets: [] });
+
+      expect(slsPlugin.removeFileConfig()).to.eventually.be.rejectedWith(
+        `No buckets found matching ${serverless.service.custom.pklConfig.upload.bucket}`
+      );
+    });
+
+    it('removes the file configuration', function () {
+      awsRequest
+        .withArgs('S3', 'listBuckets')
+        .resolves({ Buckets: [{ Name: serverless.service.custom.pklConfig.upload.bucket }] });
+
+      awsRequest.withArgs('S3', 'deleteObject').resolves();
+
+      expect(slsPlugin.removeFileConfig()).to.eventually.be.fulfilled;
+    });
+  });
 });

@@ -1,8 +1,0 @@
-ARCH: String = "amd64"
-UPLOAD_BUCKET: String = "sls-apps-config"
-SQS_ARN: String = "arn:aws:sqs:us-east-1:123456789012:my-queue"
-SQS_URL: String = "https://sqs.us-east-1.amazonaws.com/123456789012/my-queue"
-
-some {
-  config = "some"
-}

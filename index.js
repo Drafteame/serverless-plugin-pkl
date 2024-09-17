@@ -56,6 +56,9 @@ export default class SlsPlugin {
 
       // Execute upload before package create deployment artifacts
       'before:package:createDeploymentArtifacts': this.uploadConfig.bind(this),
+
+      // Execute remove file config after sls remove
+      'after:remove:remove': this.removeFileConfig.bind(this),
     };
   }
 
@@ -161,6 +164,11 @@ export default class SlsPlugin {
     });
   }
 
+  /**
+   * This method is responsible for uploading the PKL configuration to the S3 bucket specified in the configuration.
+   *
+   * @returns {Promise<void>}
+   */
   async uploadConfig() {
     if (!this.serverless.service.custom?.pklConfig?.upload) {
       this.info('No upload configuration found');
@@ -177,6 +185,30 @@ export default class SlsPlugin {
     await this.putS3Object(content);
   }
 
+  /**
+   * This method is responsible for removing the PKL configuration from the S3 bucket.
+   *
+   * @returns {Promise<void>}
+   */
+  async removeFileConfig() {
+    if (!this.serverless.service.custom?.pklConfig?.upload) {
+      this.info('No upload configuration found');
+      return;
+    }
+
+    this.info('Removing PKL configuration from S3 bucket');
+
+    await this.bucketExists();
+
+    await this.deleteS3Object();
+  }
+
+  /**
+   * This method checks if the bucket specified in the configuration exists.
+   *
+   * @returns {Promise<void>}
+   * @throws {Error} If the bucket does not
+   */
   async bucketExists() {
     const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
 
@@ -200,6 +232,18 @@ export default class SlsPlugin {
     };
 
     await this.provider.request('S3', 'putObject', params);
+  }
+
+  async deleteS3Object() {
+    const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
+    const format = this.serverless.service.custom?.pklConfig?.upload?.format || 'json';
+
+    const params = {
+      Bucket: bucket,
+      Key: `${this.serverless.service.service}.${format}`,
+    };
+
+    await this.provider.request('S3', 'deleteObject', params);
   }
 
   debug(msg) {
