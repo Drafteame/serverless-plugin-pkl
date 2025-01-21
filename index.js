@@ -177,7 +177,16 @@ export default class SlsPlugin {
 
     this.info('Uploading PKL configuration to S3 bucket');
 
-    await this.bucketExists();
+    const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
+    const create = this.serverless.service.custom?.pklConfig?.upload?.create || true;
+
+    const exists = await this.bucketExists();
+
+    if (!exists && create) {
+      await this.createBucket();
+    } else {
+      throw new Error(`No buckets found matching ${bucket}`);
+    }
 
     const format = this.serverless.service.custom?.pklConfig?.upload?.format || 'json';
     const content = this.buildPkl(this.getFileConfig(), format);
@@ -198,7 +207,12 @@ export default class SlsPlugin {
 
     this.info('Removing PKL configuration from S3 bucket');
 
-    await this.bucketExists();
+    const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
+
+    if (await this.bucketExists()) {
+      this.warn(`No buckets found matching ${bucket}`);
+      return;
+    }
 
     await this.deleteS3Object();
   }
@@ -206,8 +220,7 @@ export default class SlsPlugin {
   /**
    * This method checks if the bucket specified in the configuration exists.
    *
-   * @returns {Promise<void>}
-   * @throws {Error} If the bucket does not
+   * @returns {Promise<boolean>}
    */
   async bucketExists() {
     const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
@@ -216,9 +229,7 @@ export default class SlsPlugin {
 
     const filtered = data.Buckets.map((item) => item.Name).filter((name) => name === bucket);
 
-    if (filtered.length === 0) {
-      throw new Error(`No buckets found matching ${bucket}`);
-    }
+    return filtered.length > 0;
   }
 
   async putS3Object(content) {
@@ -246,6 +257,26 @@ export default class SlsPlugin {
     await this.provider.request('S3', 'deleteObject', params);
   }
 
+  async createBucket() {
+    const bucket = this.serverless.service.custom?.pklConfig?.upload?.bucket;
+
+    const params = {
+      Bucket: bucket,
+    };
+
+    try {
+      await this.provider.request('S3', 'createBucket', params);
+      this.info(`Created bucket: ${bucket}`);
+    } catch (error) {
+      if (error.code === 'BucketAlreadyExists') {
+        this.warn(`Bucket ${bucket} already exists`);
+        return;
+      }
+
+      throw error;
+    }
+  }
+
   debug(msg) {
     if (process.env.SLS_DEBUG) {
       this.serverless.cli.log(`${chalk.yellow(logPrefix)}: ${msg}`);
@@ -254,5 +285,9 @@ export default class SlsPlugin {
 
   info(msg) {
     this.serverless.cli.log(`${chalk.cyan(logPrefix)}: ${msg}`);
+  }
+
+  warn(msg) {
+    this.serverless.cli.log(`${chalk.yellow(logPrefix)}: ${msg}`);
   }
 }

@@ -30,6 +30,7 @@ describe('SlsPlugin', function () {
             upload: {
               bucket: 'bucket',
               key: 'key',
+              create: false,
             },
           },
           some: '{{pkl:key}}',
@@ -132,6 +133,29 @@ describe('SlsPlugin', function () {
       awsRequest.withArgs('S3', 'deleteObject').resolves();
 
       expect(slsPlugin.removeFileConfig()).to.eventually.be.fulfilled;
+    });
+  });
+
+  describe('create bucket if not exists', function () {
+    it('creates the bucket and uploads the file', async function () {
+      awsRequest.withArgs('S3', 'listBuckets').resolves({ Buckets: [] });
+      awsRequest.withArgs('S3', 'createBucket').resolves();
+
+      const cmd = 'pkl eval -f json valid.pkl';
+      const opts = { cwd: process.cwd(), env: process.env };
+      const fileConfig = { key: 'value' };
+
+      execStub.withArgs(cmd, opts).returns(JSON.stringify(fileConfig));
+
+      awsRequest.withArgs('S3', 'putObject').resolves();
+
+      slsPlugin.serverless.service.custom.pklConfig.upload.create = true;
+
+      try {
+        await slsPlugin.uploadConfig();
+      } catch (e) {
+        throw e;
+      }
     });
   });
 });

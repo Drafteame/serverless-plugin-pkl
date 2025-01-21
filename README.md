@@ -32,6 +32,7 @@ custom:
     upload:
       bucket: my-bucket
       format: json
+      create: true
 ```
 
 In this configuration:
@@ -41,6 +42,8 @@ In this configuration:
   - `bucket` is the name of the S3 bucket where the `pkl` file should be uploaded.
   - `format` is the format in which the `pkl` file should be uploaded. By default, it is `json`, but you can specify
     `yaml` or `xml` to.
+  - `create` is a boolean that specifies whether the bucket should be created if it does not exist. By default, it is
+    `true`.
 
 ### Templating in Serverless Configuration
 
