@@ -182,10 +182,12 @@ export default class SlsPlugin {
 
     const exists = await this.bucketExists();
 
+    if (!exists && !create) {
+      throw new Error(`No buckets found matching ${bucket}`);
+    }
+
     if (!exists && create) {
       await this.createBucket();
-    } else {
-      throw new Error(`No buckets found matching ${bucket}`);
     }
 
     const format = this.serverless.service.custom?.pklConfig?.upload?.format || 'json';
