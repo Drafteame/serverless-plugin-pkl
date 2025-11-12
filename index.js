@@ -97,7 +97,17 @@ export default class SlsPlugin {
    */
   replaceOnContext(config) {
     let context = this.buildContext();
+
+    // Disable HTML escaping since we're rendering configuration, not HTML
+    // This prevents special characters like '/' from being encoded as '&#x2F;'
+    const originalEscape = mustache.escape;
+    mustache.escape = (text) => text;
+
     let replaced = mustache.render(context, config);
+
+    // Restore original escape function
+    mustache.escape = originalEscape;
+
     let ctxObj = JSON.parse(replaced);
 
     this.contextFields.forEach((key) => {
