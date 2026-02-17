@@ -96,19 +96,19 @@ export default class SlsPlugin {
    * @param {Object} config - The new configuration to be applied.
    */
   replaceOnContext(config) {
-    let context = this.buildContext();
+    const context = this.buildContext();
 
     // Disable HTML escaping since we're rendering configuration, not HTML
     // This prevents special characters like '/' from being encoded as '&#x2F;'
     const originalEscape = mustache.escape;
     mustache.escape = (text) => text;
 
-    let replaced = mustache.render(context, config);
+    const replaced = mustache.render(context, config);
 
     // Restore original escape function
     mustache.escape = originalEscape;
 
-    let ctxObj = JSON.parse(replaced);
+    const ctxObj = JSON.parse(replaced);
 
     this.contextFields.forEach((key) => {
       if (!ctxObj[key]) {
@@ -145,7 +145,7 @@ export default class SlsPlugin {
    * @returns {string} The context as a formatted JSON string.
    */
   buildContext() {
-    let context = _.chain(this.serverless.service).pick(this.contextFields).pickBy().value();
+    const context = _.chain(this.serverless.service).pick(this.contextFields).pickBy().value();
     return JSON.stringify(context, null, 2);
   }
 
@@ -162,14 +162,14 @@ export default class SlsPlugin {
    * @returns {Object} The PKL configuration as a JavaScript object.
    */
   buildPkl(file, format = 'json') {
-    let cwd = process.cwd();
-    let cmd = `pkl eval -f ${format} ${file}`;
+    const cwd = process.cwd();
+    const cmd = `pkl eval -f ${format} ${file}`;
 
     this.info(`Building PKL configuration`);
     this.debug(`Executing command: ${cmd}`);
 
     return this.exec(cmd, {
-      cwd: cwd,
+      cwd,
       env: process.env,
     });
   }

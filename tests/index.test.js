@@ -7,16 +7,16 @@ import SlsPlugin from '../index.js';
 chai.use(chaiAsPromised);
 chai.use(sinonChai);
 
-const expect = chai.expect;
+const { expect } = chai;
 
-describe('SlsPlugin', function () {
+describe('SlsPlugin', () => {
   let sandbox;
   let slsPlugin;
   let serverless;
   let awsRequest;
   let execStub;
 
-  beforeEach(function () {
+  beforeEach(() => {
     sandbox = sinon.createSandbox();
 
     awsRequest = sandbox.stub();
@@ -41,7 +41,7 @@ describe('SlsPlugin', function () {
           architecture: 'x86_64',
         },
       },
-      cli: { log: function () {} },
+      cli: { log() {} },
       getProvider: sandbox.stub().returns({ request: awsRequest }),
       extendConfiguration: sandbox.stub(),
     };
@@ -50,11 +50,11 @@ describe('SlsPlugin', function () {
     slsPlugin.exec = execStub;
   });
 
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
-  it('extends the configuration with the PKL file configuration', async function () {
+  it('extends the configuration with the PKL file configuration', async () => {
     const fileConfig = { key: 'value' };
 
     const cmd = 'pkl eval -f json valid.pkl';
@@ -72,8 +72,8 @@ describe('SlsPlugin', function () {
     expect(serverless.extendConfiguration.calledWith(['custom'], expectedCustom)).to.be.true;
   });
 
-  describe('upload configuration', function () {
-    it('throws an error when the bucket does not exist', async function () {
+  describe('upload configuration', () => {
+    it('throws an error when the bucket does not exist', async () => {
       awsRequest.withArgs('S3', 'listBuckets').resolves({ Buckets: [] });
 
       expect(slsPlugin.uploadConfig()).to.eventually.be.rejectedWith(
@@ -81,7 +81,7 @@ describe('SlsPlugin', function () {
       );
     });
 
-    it('upload with default format', function () {
+    it('upload with default format', () => {
       awsRequest
         .withArgs('S3', 'listBuckets')
         .resolves({ Buckets: [{ Name: serverless.service.custom.pklConfig.upload.bucket }] });
@@ -97,7 +97,7 @@ describe('SlsPlugin', function () {
       expect(slsPlugin.uploadConfig()).to.eventually.be.fulfilled;
     });
 
-    it('upload with custom format', function () {
+    it('upload with custom format', () => {
       slsPlugin.serverless.service.custom.pklConfig.upload.format = 'yaml';
 
       awsRequest
@@ -116,8 +116,8 @@ describe('SlsPlugin', function () {
     });
   });
 
-  describe('remove file configuration', function () {
-    it('throws an error when the bucket does not exist', async function () {
+  describe('remove file configuration', () => {
+    it('throws an error when the bucket does not exist', async () => {
       awsRequest.withArgs('S3', 'listBuckets').resolves({ Buckets: [] });
 
       expect(slsPlugin.removeFileConfig()).to.eventually.be.rejectedWith(
@@ -125,7 +125,7 @@ describe('SlsPlugin', function () {
       );
     });
 
-    it('removes the file configuration', function () {
+    it('removes the file configuration', () => {
       awsRequest
         .withArgs('S3', 'listBuckets')
         .resolves({ Buckets: [{ Name: serverless.service.custom.pklConfig.upload.bucket }] });
@@ -136,8 +136,8 @@ describe('SlsPlugin', function () {
     });
   });
 
-  describe('create bucket if not exists', function () {
-    it('creates the bucket and uploads the file', async function () {
+  describe('create bucket if not exists', () => {
+    it('creates the bucket and uploads the file', async () => {
       awsRequest.withArgs('S3', 'listBuckets').resolves({ Buckets: [] });
       awsRequest.withArgs('S3', 'createBucket').resolves();
 
