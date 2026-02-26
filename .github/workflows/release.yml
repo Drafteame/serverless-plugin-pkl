@@ -21,16 +21,16 @@ jobs:
       version: ${{ steps.cz.outputs.version }}
     steps:
       - name: Check out
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.ACCESS_TOKEN }}
           ref: 'main'
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
-          python-version: 3.11
+          python-version: '3.13'
 
       - name: Config Git User
         run: |
@@ -47,7 +47,7 @@ jobs:
           echo "version=\"v$REV\"" >> $GITHUB_OUTPUT
 
       - name: Push changes
-        uses: ad-m/github-push-action@v0.8.0
+        uses: ad-m/github-push-action@v1.0.0
         with:
           github_token: ${{ secrets.ACCESS_TOKEN }}
           repository: ${{ github.repository }}
@@ -68,7 +68,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.ACCESS_TOKEN }}
@@ -81,6 +81,9 @@ jobs:
 
       - name: Install dependencies
         run: npm install --legacy-peer-deps
+
+      - name: Build
+        run: npm run build
 
       - name: Publish to NPM
         uses: JS-DevTools/npm-publish@v4
@@ -95,7 +98,7 @@ jobs:
       - bump_version
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           token: ${{ secrets.ACCESS_TOKEN }}

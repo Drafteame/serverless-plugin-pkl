@@ -4,13 +4,15 @@ import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
-    ignores: ['node_modules/', 'build/', 'coverage/', 'eslint.config.mjs'],
+    ignores: ['node_modules/', 'dist/', 'coverage/', 'eslint.config.mjs'],
   },
   plugins.stylistic,
   plugins.importX,
+  plugins.typescriptEslint,
   ...configs.base.recommended,
+  ...configs.base.typescript,
   {
-    files: ['**/*.js'],
+    files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
@@ -19,6 +21,10 @@ export default [
       },
       parserOptions: {
         ecmaVersion: 'latest',
+        projectService: {
+          allowDefaultProject: ['tests/*.test.ts'],
+          defaultProject: 'tsconfig.json',
+        },
       },
     },
     rules: {
@@ -28,20 +34,10 @@ export default [
     },
   },
   {
-    files: ['tests/**/*.js'],
-    languageOptions: {
-      globals: {
-        describe: 'readonly',
-        it: 'readonly',
-        beforeEach: 'readonly',
-        afterEach: 'readonly',
-        before: 'readonly',
-        after: 'readonly',
-      },
-    },
+    files: ['tests/**/*.ts'],
     rules: {
-      'no-unused-expressions': 'off',
       'no-useless-catch': 'off',
+      'import-x/extensions': 'off',
     },
   },
   prettierConfig,
